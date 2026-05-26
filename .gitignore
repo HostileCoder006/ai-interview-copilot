@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.output/
+.vinxi/
+.next/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+backend/.env
+frontend/.env.local
+data/
+*.faiss
+.DS_Store
+.lovable/
+.wrangler/

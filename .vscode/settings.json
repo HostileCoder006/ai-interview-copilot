@@ -1,0 +1,19 @@
+{
+  // Point VS Code at the exact Python that has faster-whisper installed
+  "python.defaultInterpreterPath": "C:\\Users\\Yash\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+
+  // Disable isort as a language server — it crashes on Python 3.13 in some VS Code versions.
+  // Import sorting still works via the formatter if you want it, but the server is not needed.
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "isort.serverEnabled": false,
+
+  // Optional: suppress the isort crash notification entirely
+  "python.analysis.ignore": [],
+
+  // Keep the terminal pointed at the right Python too
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "C:\\Users\\Yash\\AppData\\Local\\Programs\\Python\\Python313"
+  }
+}
