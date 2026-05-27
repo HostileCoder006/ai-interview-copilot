@@ -209,9 +209,9 @@ export function AppShell({
             {!collapsed && (
               <>
                 <div className="flex min-w-0 flex-col leading-tight">
-                  <span className="truncate text-[12.5px] font-medium">Arjun Kumar</span>
+                  <span className="truncate text-[12.5px] font-medium">Aryan Maurya</span>
                   <span className="truncate text-[10.5px] text-muted-foreground">
-                    arjun@interviewai.dev
+                    aryan@interviewai.dev
                   </span>
                 </div>
                 <button
@@ -333,9 +333,9 @@ export function AppShell({
                   {profileOpen && (
                     <div className="absolute right-0 top-11 z-40 w-52 origin-top-right animate-in-up rounded-xl border border-border bg-popover/95 p-1.5 shadow-[var(--shadow-soft)] backdrop-blur-xl">
                       <div className="px-2.5 py-2">
-                        <div className="text-[12.5px] font-medium">Arjun Kumar</div>
+                        <div className="text-[12.5px] font-medium">Aryan Maurya</div>
                         <div className="text-[11px] text-muted-foreground">
-                          arjun@interviewai.dev
+                          aryan@interviewai.dev
                         </div>
                       </div>
                       <div className="my-1 h-px bg-border" />
