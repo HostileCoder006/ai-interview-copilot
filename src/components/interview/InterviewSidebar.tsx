@@ -120,7 +120,11 @@ function SpeechMetricsPanel({ metrics }: { metrics: SpeechMetrics }) {
   const rows = [
     { label: "Clarity", value: metrics.clarityScore, tone: "success" as const },
     { label: "Confidence", value: metrics.confidenceScore, tone: "primary" as const },
-    { label: `Pace (${metrics.wpm || "—"} wpm)`, value: metrics.pacingScore, tone: "info" as const },
+    {
+      label: `Pace (${metrics.wpm || "—"} wpm)`,
+      value: metrics.pacingScore,
+      tone: "info" as const,
+    },
     { label: "Technical", value: metrics.technicalScore, tone: "warning" as const },
   ];
   return (

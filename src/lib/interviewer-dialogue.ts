@@ -51,17 +51,10 @@ export function analyzeAnswerSignals(answer: string): AnswerSignals {
   return {
     wordCount,
     hasComplexity:
-      /\bo\(|complexity|big.?o|time complexity|space complexity|linear|logn|quadratic/i.test(
-        lower,
-      ),
-    hasEdgeCases:
-      /edge|null|empty|corner|boundary|overflow|duplicate|off.?by|invalid/i.test(
-        lower,
-      ),
+      /\bo\(|complexity|big.?o|time complexity|space complexity|linear|logn|quadratic/i.test(lower),
+    hasEdgeCases: /edge|null|empty|corner|boundary|overflow|duplicate|off.?by|invalid/i.test(lower),
     hasOptimization:
-      /optim|better|faster|reduce|improve|hash|heap|trie|dp|dynamic programming|memo/i.test(
-        lower,
-      ),
+      /optim|better|faster|reduce|improve|hash|heap|trie|dp|dynamic programming|memo/i.test(lower),
     hasTradeoffs:
       /trade.?off|versus|vs\.|downside|cost|cons\b|latency|throughput|availability|consistency/i.test(
         lower,
@@ -71,23 +64,16 @@ export function analyzeAnswerSignals(answer: string): AnswerSignals {
         lower,
       ),
     hasBruteForce: /brute|naive|nested loop|try every/i.test(lower),
-    hasDataStructure:
-      /array|list|tree|graph|map|set|stack|queue|heap|trie|linked/i.test(lower),
-    hasExamples: /example|for instance|say we|dry run|walk through|imagine/i.test(
-      lower,
-    ),
+    hasDataStructure: /array|list|tree|graph|map|set|stack|queue|heap|trie|linked/i.test(lower),
+    hasExamples: /example|for instance|say we|dry run|walk through|imagine/i.test(lower),
     looksLikeSystemDesign:
-      /api|database|service|component|deploy|reliab|fault|storage|schema|microservice/i.test(
-        lower,
-      ),
+      /api|database|service|component|deploy|reliab|fault|storage|schema|microservice/i.test(lower),
   };
 }
 
 function reactionPrefix(signals: AnswerSignals, scores?: InterviewerReplyInput["scores"]): string {
-  const strong =
-    (scores?.correctness ?? 0) >= 78 || (scores?.communication ?? 0) >= 78;
-  const weak =
-    (scores?.correctness ?? 100) < 55 || signals.wordCount < 25;
+  const strong = (scores?.correctness ?? 0) >= 78 || (scores?.communication ?? 0) >= 78;
+  const weak = (scores?.correctness ?? 100) < 55 || signals.wordCount < 25;
 
   if (weak) {
     return pickOne([
@@ -109,13 +95,7 @@ function reactionPrefix(signals: AnswerSignals, scores?: InterviewerReplyInput["
   }
 
   if (strong) {
-    return pickOne([
-      "Okay.",
-      "Got it.",
-      "Alright.",
-      "Fair enough.",
-      "Understood.",
-    ]);
+    return pickOne(["Okay.", "Got it.", "Alright.", "Fair enough.", "Understood."]);
   }
 
   return pickOne([
@@ -170,10 +150,7 @@ function pickDeepProbe(signals: AnswerSignals, followUps: string[], followUpInde
     return pickOne([
       "I need more than a high-level sketch — talk me through your approach and why it's correct.",
       "Expand on the core idea: data structure, algorithm, and why it works.",
-      joinParts([
-        pickOne(DEPTH_PROBES.examples),
-        bank ? `Also: ${bank}` : "",
-      ]),
+      joinParts([pickOne(DEPTH_PROBES.examples), bank ? `Also: ${bank}` : ""]),
     ]);
   }
 
@@ -229,24 +206,12 @@ function transitionToNewQuestion(company: InterviewerCompany, question: string):
   ]);
 
   const companyFlavor: Partial<Record<InterviewerCompany, string[]>> = {
-    Google: [
-      "Think about correctness first, then how you'd operate this at Google scale.",
-    ],
-    Amazon: [
-      "Keep the customer impact in mind — what fails first under load?",
-    ],
-    Microsoft: [
-      "Assume this ships to enterprise customers — reliability matters.",
-    ],
-    Meta: [
-      "Picture billions of events — where does this design strain?",
-    ],
-    Apple: [
-      "Assume tight latency and privacy constraints on device and cloud.",
-    ],
-    Stripe: [
-      "Money movement is unforgiving — call out idempotency and failure handling.",
-    ],
+    Google: ["Think about correctness first, then how you'd operate this at Google scale."],
+    Amazon: ["Keep the customer impact in mind — what fails first under load?"],
+    Microsoft: ["Assume this ships to enterprise customers — reliability matters."],
+    Meta: ["Picture billions of events — where does this design strain?"],
+    Apple: ["Assume tight latency and privacy constraints on device and cloud."],
+    Stripe: ["Money movement is unforgiving — call out idempotency and failure handling."],
   };
 
   const flavor = companyFlavor[company];
@@ -255,10 +220,7 @@ function transitionToNewQuestion(company: InterviewerCompany, question: string):
   return joinParts([lead, question, tail]);
 }
 
-export function formatOpeningQuestion(
-  company: InterviewerCompany,
-  question: string,
-): string {
+export function formatOpeningQuestion(company: InterviewerCompany, question: string): string {
   const intro = pickOne([
     "Thanks for joining — I'll drive today like a real onsite.",
     "Hi — I'll ask a few technical questions and dig in where it matters.",

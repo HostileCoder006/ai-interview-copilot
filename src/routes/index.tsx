@@ -24,10 +24,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useInterviewSessions } from "@/hooks/useInterviewSessions";
-import {
-  computeInterviewStats,
-  formatRelativeSessionDate,
-} from "@/lib/interview-history-utils";
+import { computeInterviewStats, formatRelativeSessionDate } from "@/lib/interview-history-utils";
 
 export const Route = createFileRoute("/")({ component: Dashboard });
 
@@ -36,9 +33,7 @@ const companies = ["Google", "Amazon", "Microsoft", "Meta", "Apple", "Stripe"] a
 function Dashboard() {
   const sessions = useInterviewSessions();
   const stats = computeInterviewStats(sessions);
-  const recent = [...sessions]
-    .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
-    .slice(0, 5);
+  const recent = [...sessions].sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0)).slice(0, 5);
 
   const strengths =
     stats.recentStrengths.length > 0
@@ -89,8 +84,8 @@ function Dashboard() {
               the real thing.
             </h2>
             <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-              Live camera or text mode — adaptive FAANG-style questions, real-time
-              analytics, and session history that tracks your progress.
+              Live camera or text mode — adaptive FAANG-style questions, real-time analytics, and
+              session history that tracks your progress.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/voice">
@@ -111,11 +106,7 @@ function Dashboard() {
               value={stats.sessionCount ? String(stats.avgOverall) : "—"}
               accent="primary"
             />
-            <Stat
-              label="Sessions"
-              value={String(stats.sessionCount)}
-              accent="success"
-            />
+            <Stat label="Sessions" value={String(stats.sessionCount)} accent="success" />
             <Stat
               label="Comm. Score"
               value={stats.sessionCount ? `${stats.avgCommunication}%` : "—"}
@@ -233,8 +224,7 @@ function Dashboard() {
                 }
               />
               {stats.scoreTrend.length >= 2 &&
-                stats.scoreTrend[stats.scoreTrend.length - 1]! >=
-                  stats.scoreTrend[0]! && (
+                stats.scoreTrend[stats.scoreTrend.length - 1]! >= stats.scoreTrend[0]! && (
                   <Badge tone="success">
                     <TrendingUp className="h-3 w-3" /> Improving
                   </Badge>

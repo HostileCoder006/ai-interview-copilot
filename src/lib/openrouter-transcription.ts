@@ -1,21 +1,15 @@
 import { OPENROUTER_BASE_URL } from "./api-config";
 
-const SUPPORTED_FORMATS = new Set([
-  "wav",
-  "mp3",
-  "flac",
-  "m4a",
-  "ogg",
-  "webm",
-  "aac",
-]);
+const SUPPORTED_FORMATS = new Set(["wav", "mp3", "flac", "m4a", "ogg", "webm", "aac"]);
 
 export type TranscriptionApiResult =
   | { ok: true; text: string }
   | { ok: false; status: number; message: string; detail: string };
 
 function bytesToBase64(bytes: Uint8Array): string {
-  const bufferCtor = (globalThis as { Buffer?: { from: (u: Uint8Array) => { toString: (enc: string) => string } } }).Buffer;
+  const bufferCtor = (
+    globalThis as { Buffer?: { from: (u: Uint8Array) => { toString: (enc: string) => string } } }
+  ).Buffer;
   if (bufferCtor) {
     return bufferCtor.from(bytes).toString("base64");
   }

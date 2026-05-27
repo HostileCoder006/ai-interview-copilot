@@ -2,10 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card, CardHeader, ProgressBar } from "@/components/ui-bits";
 import {
-  Camera, Mic, MicOff, VideoOff, Play, Square, ChevronRight,
-  Brain, Zap, AlertCircle, CheckCircle2, Clock, BarChart3,
-  MessageSquare, Target, TrendingUp, Award, RefreshCw, Building2,
-  Activity, Volume2, Loader2,
+  Camera,
+  Mic,
+  MicOff,
+  VideoOff,
+  Play,
+  Square,
+  ChevronRight,
+  Brain,
+  Zap,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  BarChart3,
+  MessageSquare,
+  Target,
+  TrendingUp,
+  Award,
+  RefreshCw,
+  Building2,
+  Activity,
+  Volume2,
+  Loader2,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useOnlineTranscription } from "@/hooks/useOnlineTranscription";
@@ -56,50 +74,220 @@ interface FeedbackReport {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const INTERVIEW_QUESTIONS: Record<Company | "General", Record<Difficulty, { question: string; followUps: string[] }[]>> = {
+const INTERVIEW_QUESTIONS: Record<
+  Company | "General",
+  Record<Difficulty, { question: string; followUps: string[] }[]>
+> = {
   General: {
     Easy: [
-      { question: "I'd like you to reverse a linked list — talk me through your approach and complexity as you go.", followUps: ["What changes if you do it iteratively vs recursively?", "How would you detect and handle a cycle?"] },
-      { question: "When would you reach for a stack versus a queue? Give me a real scenario for each.", followUps: ["How would you implement a queue using only stacks — and what's the cost?"] },
+      {
+        question:
+          "I'd like you to reverse a linked list — talk me through your approach and complexity as you go.",
+        followUps: [
+          "What changes if you do it iteratively vs recursively?",
+          "How would you detect and handle a cycle?",
+        ],
+      },
+      {
+        question:
+          "When would you reach for a stack versus a queue? Give me a real scenario for each.",
+        followUps: ["How would you implement a queue using only stacks — and what's the cost?"],
+      },
     ],
     Medium: [
-      { question: "Given integers and a target sum, how would you find two numbers that add up — walk me through the approach you'd use in an interview.", followUps: ["What if multiple pairs are valid?", "How do duplicates in the array affect your logic?", "What's the invariant in your hash-map solution?"] },
-      { question: "Longest substring without repeating characters — how would you attack that?", followUps: ["Why does sliding window fit here?", "What breaks if the input isn't ASCII?"] },
+      {
+        question:
+          "Given integers and a target sum, how would you find two numbers that add up — walk me through the approach you'd use in an interview.",
+        followUps: [
+          "What if multiple pairs are valid?",
+          "How do duplicates in the array affect your logic?",
+          "What's the invariant in your hash-map solution?",
+        ],
+      },
+      {
+        question: "Longest substring without repeating characters — how would you attack that?",
+        followUps: ["Why does sliding window fit here?", "What breaks if the input isn't ASCII?"],
+      },
     ],
     Hard: [
-      { question: "Design an LRU cache with O(1) get and put — what data structures and invariants do you need?", followUps: ["Why doubly linked list plus hash map?", "How would you make this thread-safe under contention?", "What if entries need TTL expiry?"] },
-      { question: "Median from a data stream in real time — how would you structure that?", followUps: ["Why two heaps — walk me through rebalance.", "How does memory grow if the stream never ends?"] },
+      {
+        question:
+          "Design an LRU cache with O(1) get and put — what data structures and invariants do you need?",
+        followUps: [
+          "Why doubly linked list plus hash map?",
+          "How would you make this thread-safe under contention?",
+          "What if entries need TTL expiry?",
+        ],
+      },
+      {
+        question: "Median from a data stream in real time — how would you structure that?",
+        followUps: [
+          "Why two heaps — walk me through rebalance.",
+          "How does memory grow if the stream never ends?",
+        ],
+      },
     ],
   },
   Google: {
-    Easy: [{ question: "How do you decide if a binary tree is balanced — and what does 'balanced' mean to you?", followUps: ["Height-balanced vs weight-balanced — when does each matter?"] }],
-    Medium: [{ question: "You've got a grid of 0s and 1s — how would you count islands? Talk me through it.", followUps: ["BFS or DFS — which would you ship and why?", "What if the grid doesn't fit in memory?"] }],
-    Hard: [{ question: "Sketch autocomplete at Google scale — ranking, data structures, and what you'd optimize first.", followUps: ["Trie vs sorted structures for prefixes?", "How would you personalize without killing latency?"] }],
+    Easy: [
+      {
+        question:
+          "How do you decide if a binary tree is balanced — and what does 'balanced' mean to you?",
+        followUps: ["Height-balanced vs weight-balanced — when does each matter?"],
+      },
+    ],
+    Medium: [
+      {
+        question:
+          "You've got a grid of 0s and 1s — how would you count islands? Talk me through it.",
+        followUps: [
+          "BFS or DFS — which would you ship and why?",
+          "What if the grid doesn't fit in memory?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question:
+          "Sketch autocomplete at Google scale — ranking, data structures, and what you'd optimize first.",
+        followUps: [
+          "Trie vs sorted structures for prefixes?",
+          "How would you personalize without killing latency?",
+        ],
+      },
+    ],
   },
   Amazon: {
-    Easy: [{ question: "Two pointers — when is it the right tool, and when does it fall apart?", followUps: ["Give me a case where you'd pick something else."] }],
-    Medium: [{ question: "Order processing for a marketplace — what are the core services and failure modes?", followUps: ["Payment fails mid-checkout — what happens?", "How do you keep inventory from overselling?"] }],
-    Hard: [{ question: "Recommendation engine at Amazon scale — how would you architect it?", followUps: ["Collaborative vs content-based — tradeoffs?", "Cold start for a brand-new user?"] }],
+    Easy: [
+      {
+        question: "Two pointers — when is it the right tool, and when does it fall apart?",
+        followUps: ["Give me a case where you'd pick something else."],
+      },
+    ],
+    Medium: [
+      {
+        question:
+          "Order processing for a marketplace — what are the core services and failure modes?",
+        followUps: [
+          "Payment fails mid-checkout — what happens?",
+          "How do you keep inventory from overselling?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question: "Recommendation engine at Amazon scale — how would you architect it?",
+        followUps: [
+          "Collaborative vs content-based — tradeoffs?",
+          "Cold start for a brand-new user?",
+        ],
+      },
+    ],
   },
   Microsoft: {
-    Easy: [{ question: "Process vs thread — when do you choose each in production?", followUps: ["What does context switch cost you in practice?"] }],
-    Medium: [{ question: "Design a file system — key abstractions and data structures.", followUps: ["Concurrent writes to the same file?", "What does your inode/metadata story look like?"] }],
-    Hard: [{ question: "Distributed KV on Azure — consistency, availability, and partition behavior.", followUps: ["Network partition — what do clients see?", "Replication: sync vs async — your call and why."] }],
+    Easy: [
+      {
+        question: "Process vs thread — when do you choose each in production?",
+        followUps: ["What does context switch cost you in practice?"],
+      },
+    ],
+    Medium: [
+      {
+        question: "Design a file system — key abstractions and data structures.",
+        followUps: [
+          "Concurrent writes to the same file?",
+          "What does your inode/metadata story look like?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question: "Distributed KV on Azure — consistency, availability, and partition behavior.",
+        followUps: [
+          "Network partition — what do clients see?",
+          "Replication: sync vs async — your call and why.",
+        ],
+      },
+    ],
   },
   Meta: {
-    Easy: [{ question: "Cycle in a linked list — how do you detect it, and can you find where it starts?", followUps: ["Walk me through Floyd's logic step by step."] }],
-    Medium: [{ question: "News feed ranking — high level architecture and what you'd measure.", followUps: ["Celebrity with 50M followers — fan-out strategy?", "How do you avoid stale or spammy content dominating?"] }],
-    Hard: [{ question: "Realtime chat at WhatsApp scale — delivery guarantees and architecture.", followUps: ["User offline for days — how do you catch up?", "E2E encryption — what changes in your design?"] }],
+    Easy: [
+      {
+        question:
+          "Cycle in a linked list — how do you detect it, and can you find where it starts?",
+        followUps: ["Walk me through Floyd's logic step by step."],
+      },
+    ],
+    Medium: [
+      {
+        question: "News feed ranking — high level architecture and what you'd measure.",
+        followUps: [
+          "Celebrity with 50M followers — fan-out strategy?",
+          "How do you avoid stale or spammy content dominating?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question: "Realtime chat at WhatsApp scale — delivery guarantees and architecture.",
+        followUps: [
+          "User offline for days — how do you catch up?",
+          "E2E encryption — what changes in your design?",
+        ],
+      },
+    ],
   },
   Apple: {
-    Easy: [{ question: "GC vs ARC — when does each make sense on Apple platforms?", followUps: ["Retain cycles — how do you spot and break them?"] }],
-    Medium: [{ question: "Photo sync like iCloud — hardest problems and how you'd solve them.", followUps: ["Conflict when two devices edit the same asset?", "Deduplication without hashing every byte on device?"] }],
-    Hard: [{ question: "Privacy-preserving analytics — collect signal without exposing raw user data.", followUps: ["Differential privacy in plain language?", "Where does on-device ML help vs hurt?"] }],
+    Easy: [
+      {
+        question: "GC vs ARC — when does each make sense on Apple platforms?",
+        followUps: ["Retain cycles — how do you spot and break them?"],
+      },
+    ],
+    Medium: [
+      {
+        question: "Photo sync like iCloud — hardest problems and how you'd solve them.",
+        followUps: [
+          "Conflict when two devices edit the same asset?",
+          "Deduplication without hashing every byte on device?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question: "Privacy-preserving analytics — collect signal without exposing raw user data.",
+        followUps: [
+          "Differential privacy in plain language?",
+          "Where does on-device ML help vs hurt?",
+        ],
+      },
+    ],
   },
   Stripe: {
-    Easy: [{ question: "Idempotency in payment APIs — why it matters and how you'd implement it.", followUps: ["Idempotency keys — lifecycle and storage."] }],
-    Medium: [{ question: "Rate limiting Stripe's public API — algorithm and multi-region story.", followUps: ["Token bucket vs sliding window under burst traffic?", "Distributed limiter — how do you keep counts consistent?"] }],
-    Hard: [{ question: "Realtime fraud on card charges — signals, latency budget, and false positives.", followUps: ["How do you tune precision vs recall live?", "Model refresh without taking risk offline?"] }],
+    Easy: [
+      {
+        question: "Idempotency in payment APIs — why it matters and how you'd implement it.",
+        followUps: ["Idempotency keys — lifecycle and storage."],
+      },
+    ],
+    Medium: [
+      {
+        question: "Rate limiting Stripe's public API — algorithm and multi-region story.",
+        followUps: [
+          "Token bucket vs sliding window under burst traffic?",
+          "Distributed limiter — how do you keep counts consistent?",
+        ],
+      },
+    ],
+    Hard: [
+      {
+        question: "Realtime fraud on card charges — signals, latency budget, and false positives.",
+        followUps: [
+          "How do you tune precision vs recall live?",
+          "Model refresh without taking risk offline?",
+        ],
+      },
+    ],
   },
 };
 
@@ -166,18 +354,34 @@ function generateFeedbackReport(
   if (metrics.wpm >= 130 && metrics.wpm <= 170) strengths.push("Natural conversational rhythm");
   if (questionCount >= 2) strengths.push("Engaged with follow-up questions effectively");
 
-  if (metrics.fillerCount > 5) weaknesses.push(`High filler word usage (${metrics.fillerCount} instances): ${metrics.fillerWords.slice(0, 3).join(", ")}`);
-  if (metrics.pauseCount > 3) weaknesses.push(`${metrics.pauseCount} noticeable hesitation pauses detected`);
+  if (metrics.fillerCount > 5)
+    weaknesses.push(
+      `High filler word usage (${metrics.fillerCount} instances): ${metrics.fillerWords.slice(0, 3).join(", ")}`,
+    );
+  if (metrics.pauseCount > 3)
+    weaknesses.push(`${metrics.pauseCount} noticeable hesitation pauses detected`);
   if (metrics.wpm < 100) weaknesses.push("Speaking pace was too slow — may signal uncertainty");
   if (metrics.wpm > 200) weaknesses.push("Speaking pace was too fast — harder to follow");
-  if (metrics.clarityScore < 65) weaknesses.push("Answer structure could be clearer — try problem → approach → complexity format");
-  if (metrics.technicalScore < 65) weaknesses.push("Technical explanations lacked depth — elaborate on trade-offs");
+  if (metrics.clarityScore < 65)
+    weaknesses.push(
+      "Answer structure could be clearer — try problem → approach → complexity format",
+    );
+  if (metrics.technicalScore < 65)
+    weaknesses.push("Technical explanations lacked depth — elaborate on trade-offs");
 
-  if (metrics.fillerCount > 3) recommendations.push("Practice the 'pause instead of filler' technique — silence is more confident than 'um'");
-  if (metrics.pacingScore < 70) recommendations.push("Record yourself and aim for 130–170 WPM for technical explanations");
-  if (metrics.technicalScore < 75) recommendations.push("Structure answers as: approach → complexity → edge cases → optimization");
-  recommendations.push("Do 2–3 mock interviews per week to build muscle memory for clear articulation");
-  if (durationSeconds < 60) recommendations.push("Aim for 90–120 second answers — elaborate on your reasoning more");
+  if (metrics.fillerCount > 3)
+    recommendations.push(
+      "Practice the 'pause instead of filler' technique — silence is more confident than 'um'",
+    );
+  if (metrics.pacingScore < 70)
+    recommendations.push("Record yourself and aim for 130–170 WPM for technical explanations");
+  if (metrics.technicalScore < 75)
+    recommendations.push("Structure answers as: approach → complexity → edge cases → optimization");
+  recommendations.push(
+    "Do 2–3 mock interviews per week to build muscle memory for clear articulation",
+  );
+  if (durationSeconds < 60)
+    recommendations.push("Aim for 90–120 second answers — elaborate on your reasoning more");
 
   return {
     overallScore: overall,
@@ -205,12 +409,16 @@ function getAIThinkingDelay(): number {
 // The actual transcript is produced by the online Whisper API on stop.
 
 function useContinuousSpeech(onFinal: (text: string) => void, onInterim: (text: string) => void) {
-  const recRef    = useRef<SpeechRecognition | null>(null);
+  const recRef = useRef<SpeechRecognition | null>(null);
   const activeRef = useRef(false);
-  const onFinalRef   = useRef(onFinal);
+  const onFinalRef = useRef(onFinal);
   const onInterimRef = useRef(onInterim);
-  useEffect(() => { onFinalRef.current = onFinal; },   [onFinal]);
-  useEffect(() => { onInterimRef.current = onInterim; }, [onInterim]);
+  useEffect(() => {
+    onFinalRef.current = onFinal;
+  }, [onFinal]);
+  useEffect(() => {
+    onInterimRef.current = onInterim;
+  }, [onInterim]);
 
   const [isSupported] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -222,7 +430,8 @@ function useContinuousSpeech(onFinal: (text: string) => void, onInterim: (text: 
 
   const getSR = () =>
     (window as unknown as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ??
-    (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+    (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition })
+      .webkitSpeechRecognition;
 
   const start = useCallback(() => {
     const SR = getSR();
@@ -231,45 +440,83 @@ function useContinuousSpeech(onFinal: (text: string) => void, onInterim: (text: 
 
     function session() {
       if (!activeRef.current) return;
-      try { recRef.current?.abort(); } catch { /* ignore */ }
+      try {
+        recRef.current?.abort();
+      } catch {
+        /* ignore */
+      }
       const SR2 = getSR();
       if (!SR2) return;
       const rec = new SR2();
-      rec.continuous = true; rec.interimResults = true; rec.lang = "en-US";
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = "en-US";
       recRef.current = rec;
       rec.onresult = (e: SpeechRecognitionEvent) => {
-        let interim = "", final = "";
+        let interim = "",
+          final = "";
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const t = e.results[i][0].transcript;
-          if (e.results[i].isFinal) final += t + " "; else interim += t;
+          if (e.results[i].isFinal) final += t + " ";
+          else interim += t;
         }
         if (final) onFinalRef.current(final);
         onInterimRef.current(interim);
       };
-      rec.onend = () => { if (activeRef.current) setTimeout(session, 80); };
-      rec.onerror = () => { /* non-fatal, onend restarts */ };
-      try { rec.start(); } catch { if (activeRef.current) setTimeout(session, 300); }
+      rec.onend = () => {
+        if (activeRef.current) setTimeout(session, 80);
+      };
+      rec.onerror = () => {
+        /* non-fatal, onend restarts */
+      };
+      try {
+        rec.start();
+      } catch {
+        if (activeRef.current) setTimeout(session, 300);
+      }
     }
     session();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const stop = useCallback(() => {
     activeRef.current = false;
     onInterimRef.current("");
-    try { recRef.current?.abort(); } catch { /* ignore */ }
+    try {
+      recRef.current?.abort();
+    } catch {
+      /* ignore */
+    }
     recRef.current = null;
   }, []);
 
-  useEffect(() => () => { activeRef.current = false; try { recRef.current?.abort(); } catch { /* ignore */ } }, []);
+  useEffect(
+    () => () => {
+      activeRef.current = false;
+      try {
+        recRef.current?.abort();
+      } catch {
+        /* ignore */
+      }
+    },
+    [],
+  );
 
   return { isSupported, start, stop };
 }
 
 // ─── Setup Screen ─────────────────────────────────────────────────────────────
 
-function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }: {
-  company: Company; setCompany: (c: Company) => void;
-  difficulty: Difficulty; setDifficulty: (d: Difficulty) => void;
+function SetupScreen({
+  company,
+  setCompany,
+  difficulty,
+  setDifficulty,
+  onStart,
+}: {
+  company: Company;
+  setCompany: (c: Company) => void;
+  difficulty: Difficulty;
+  setDifficulty: (d: Difficulty) => void;
   onStart: () => void;
 }) {
   const companies: Company[] = ["Google", "Amazon", "Microsoft", "Meta", "Apple", "Stripe"];
@@ -279,14 +526,18 @@ function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }
     <div className="mx-auto max-w-2xl animate-in-up">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[var(--gradient-surface)] p-8 text-center">
         <div aria-hidden className="absolute inset-0 [background:var(--gradient-glow)]" />
-        <div aria-hidden className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+        <div
+          aria-hidden
+          className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl"
+        />
         <div className="relative">
           <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-primary to-[oklch(0.72_0.18_320)] shadow-[0_0_40px_-8px_oklch(0.78_0.14_295/0.6)]">
             <Camera className="h-8 w-8 text-primary-foreground" />
           </div>
           <h2 className="font-display text-[32px] text-foreground">Live AI Camera Interview</h2>
           <p className="mt-2 text-[13.5px] text-muted-foreground">
-            Real-time webcam interview with AI analysis of your communication, pacing, and technical depth.
+            Real-time webcam interview with AI analysis of your communication, pacing, and technical
+            depth.
           </p>
         </div>
       </div>
@@ -296,8 +547,11 @@ function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }
           <CardHeader title="Company Track" />
           <div className="grid grid-cols-3 gap-2">
             {companies.map((c) => (
-              <button key={c} onClick={() => setCompany(c)}
-                className={`rounded-lg border px-2 py-2.5 text-[12px] font-medium transition hover:-translate-y-0.5 ${company === c ? "border-primary/50 bg-primary/10 text-foreground shadow-[var(--shadow-glow)]" : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}>
+              <button
+                key={c}
+                onClick={() => setCompany(c)}
+                className={`rounded-lg border px-2 py-2.5 text-[12px] font-medium transition hover:-translate-y-0.5 ${company === c ? "border-primary/50 bg-primary/10 text-foreground shadow-[var(--shadow-glow)]" : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"}`}
+              >
                 {c}
               </button>
             ))}
@@ -308,17 +562,26 @@ function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }
           <CardHeader title="Difficulty" />
           <div className="flex flex-col gap-2">
             {difficulties.map((d) => (
-              <button key={d} onClick={() => setDifficulty(d)}
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
                 className={`flex items-center gap-3 rounded-lg border px-4 py-3 text-left text-[13px] font-medium transition ${
                   difficulty === d
-                    ? d === "Easy" ? "border-[oklch(0.74_0.16_160/0.5)] bg-[oklch(0.74_0.16_160/0.08)] text-[oklch(0.78_0.16_160)]"
-                    : d === "Medium" ? "border-[oklch(0.80_0.14_80/0.5)] bg-[oklch(0.80_0.14_80/0.08)] text-[oklch(0.82_0.14_80)]"
-                    : "border-[oklch(0.66_0.21_25/0.5)] bg-[oklch(0.66_0.21_25/0.08)] text-[oklch(0.74_0.20_25)]"
+                    ? d === "Easy"
+                      ? "border-[oklch(0.74_0.16_160/0.5)] bg-[oklch(0.74_0.16_160/0.08)] text-[oklch(0.78_0.16_160)]"
+                      : d === "Medium"
+                        ? "border-[oklch(0.80_0.14_80/0.5)] bg-[oklch(0.80_0.14_80/0.08)] text-[oklch(0.82_0.14_80)]"
+                        : "border-[oklch(0.66_0.21_25/0.5)] bg-[oklch(0.66_0.21_25/0.08)] text-[oklch(0.74_0.20_25)]"
                     : "border-border text-muted-foreground hover:text-foreground"
-                }`}>
-                <span className={`h-2 w-2 rounded-full ${d === "Easy" ? "bg-[oklch(0.74_0.16_160)]" : d === "Medium" ? "bg-[oklch(0.80_0.14_80)]" : "bg-[oklch(0.66_0.21_25)]"}`} />
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${d === "Easy" ? "bg-[oklch(0.74_0.16_160)]" : d === "Medium" ? "bg-[oklch(0.80_0.14_80)]" : "bg-[oklch(0.66_0.21_25)]"}`}
+                />
                 {d}
-                <span className="ml-auto text-[11px] opacity-60">{d === "Easy" ? "~20 min" : d === "Medium" ? "~35 min" : "~50 min"}</span>
+                <span className="ml-auto text-[11px] opacity-60">
+                  {d === "Easy" ? "~20 min" : d === "Medium" ? "~35 min" : "~50 min"}
+                </span>
               </button>
             ))}
           </div>
@@ -327,11 +590,26 @@ function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         {[
-          { icon: Camera, label: "Webcam required", desc: "Live video feed for immersive experience" },
-          { icon: Mic, label: "Microphone required", desc: "Real-time speech transcription & analysis" },
-          { icon: Brain, label: "AI Interviewer", desc: "Adaptive follow-ups based on your answers" },
+          {
+            icon: Camera,
+            label: "Webcam required",
+            desc: "Live video feed for immersive experience",
+          },
+          {
+            icon: Mic,
+            label: "Microphone required",
+            desc: "Real-time speech transcription & analysis",
+          },
+          {
+            icon: Brain,
+            label: "AI Interviewer",
+            desc: "Adaptive follow-ups based on your answers",
+          },
         ].map((f) => (
-          <div key={f.label} className="flex items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-4">
+          <div
+            key={f.label}
+            className="flex items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-4"
+          >
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
               <f.icon className="h-4 w-4" />
             </div>
@@ -354,7 +632,13 @@ function SetupScreen({ company, setCompany, difficulty, setDifficulty, onStart }
 
 // ─── Waveform Visualizer ──────────────────────────────────────────────────────
 
-function WaveformVisualizer({ active, analyserRef }: { active: boolean; analyserRef: React.RefObject<AnalyserNode | null> }) {
+function WaveformVisualizer({
+  active,
+  analyserRef,
+}: {
+  active: boolean;
+  analyserRef: React.RefObject<AnalyserNode | null>;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
 
@@ -366,7 +650,8 @@ function WaveformVisualizer({ active, analyserRef }: { active: boolean; analyser
 
     const draw = () => {
       rafRef.current = requestAnimationFrame(draw);
-      const W = canvas.width, H = canvas.height;
+      const W = canvas.width,
+        H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
       if (active && analyserRef.current) {
@@ -406,22 +691,39 @@ function WaveformVisualizer({ active, analyserRef }: { active: boolean; analyser
 // ─── Confidence Meter ─────────────────────────────────────────────────────────
 
 function ConfidenceMeter({ value }: { value: number }) {
-  const color = value >= 75 ? "oklch(0.74 0.16 160)" : value >= 50 ? "oklch(0.80 0.14 80)" : "oklch(0.66 0.21 25)";
+  const color =
+    value >= 75
+      ? "oklch(0.74 0.16 160)"
+      : value >= 50
+        ? "oklch(0.80 0.14 80)"
+        : "oklch(0.66 0.21 25)";
   const label = value >= 75 ? "High" : value >= 50 ? "Medium" : "Low";
   return (
     <div className="flex flex-col items-center gap-1.5">
       <div className="relative h-20 w-20">
         <svg viewBox="0 0 80 80" className="h-full w-full -rotate-90">
           <circle cx="40" cy="40" r="32" fill="none" stroke="oklch(1 0 0 / 0.06)" strokeWidth="6" />
-          <circle cx="40" cy="40" r="32" fill="none" stroke={color} strokeWidth="6" strokeLinecap="round"
+          <circle
+            cx="40"
+            cy="40"
+            r="32"
+            fill="none"
+            stroke={color}
+            strokeWidth="6"
+            strokeLinecap="round"
             strokeDasharray={`${(value / 100) * 201} 201`}
-            style={{ transition: "stroke-dasharray 0.7s cubic-bezier(.2,.7,.2,1)" }} />
+            style={{ transition: "stroke-dasharray 0.7s cubic-bezier(.2,.7,.2,1)" }}
+          />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-mono text-[16px] font-semibold leading-none" style={{ color }}>{value}</span>
+          <span className="font-mono text-[16px] font-semibold leading-none" style={{ color }}>
+            {value}
+          </span>
         </div>
       </div>
-      <span className="text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">Confidence · {label}</span>
+      <span className="text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">
+        Confidence · {label}
+      </span>
     </div>
   );
 }
@@ -435,13 +737,18 @@ function useTimer(running: boolean) {
     const id = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [running]);
-  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const fmt = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   return { seconds, formatted: fmt(seconds) };
 }
 
 // ─── Active Interview Screen ──────────────────────────────────────────────────
 
-function ActiveInterview({ company, difficulty, onComplete }: {
+function ActiveInterview({
+  company,
+  difficulty,
+  onComplete,
+}: {
   company: Company;
   difficulty: Difficulty;
   onComplete: (report: FeedbackReport, durationSeconds: number) => void;
@@ -466,8 +773,14 @@ function ActiveInterview({ company, difficulty, onComplete }: {
   const [followUpIndex, setFollowUpIndex] = useState(0);
   const [questionCount, setQuestionCount] = useState(0);
   const [liveMetrics, setLiveMetrics] = useState<SpeechMetrics>({
-    fillerCount: 0, fillerWords: [], pauseCount: 0, wpm: 0,
-    clarityScore: 85, confidenceScore: 80, pacingScore: 78, technicalScore: 75,
+    fillerCount: 0,
+    fillerWords: [],
+    pauseCount: 0,
+    wpm: 0,
+    clarityScore: 85,
+    confidenceScore: 80,
+    pacingScore: 78,
+    technicalScore: 75,
   });
   const [allMetrics, setAllMetrics] = useState<SpeechMetrics[]>([]);
   const allMetricsRef = useRef<SpeechMetrics[]>([]);
@@ -481,14 +794,21 @@ function ActiveInterview({ company, difficulty, onComplete }: {
   const currentAnswerRef = useRef("");
   const phaseRef = useRef<"idle" | "listening" | "thinking">("idle");
 
-  const questionBank = INTERVIEW_QUESTIONS[company]?.[difficulty] ?? INTERVIEW_QUESTIONS.General[difficulty];
+  const questionBank =
+    INTERVIEW_QUESTIONS[company]?.[difficulty] ?? INTERVIEW_QUESTIONS.General[difficulty];
   const currentQ = questionBank[questionIndex % questionBank.length];
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, phase]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, phase]);
 
   // Keep refs in sync with state
-  useEffect(() => { currentAnswerRef.current = currentAnswer; }, [currentAnswer]);
-  useEffect(() => { phaseRef.current = phase; }, [phase]);
+  useEffect(() => {
+    currentAnswerRef.current = currentAnswer;
+  }, [currentAnswer]);
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   const activeQuestion: InterviewQuestion = {
     id: `voice-${questionIndex}`,
@@ -514,16 +834,22 @@ function ActiveInterview({ company, difficulty, onComplete }: {
   }, [whisper.liveText, whisper.isListening]);
 
   // ── Browser speech (fallback captions when online transcription is not active) ─
-  const onFinal = useCallback((text: string) => {
-    if (!whisper.isListening) {
-      setCurrentAnswer((prev) => prev + text);
-      setFullTranscript((prev) => prev + text);
-    }
-  }, [whisper.isListening]);
+  const onFinal = useCallback(
+    (text: string) => {
+      if (!whisper.isListening) {
+        setCurrentAnswer((prev) => prev + text);
+        setFullTranscript((prev) => prev + text);
+      }
+    },
+    [whisper.isListening],
+  );
 
-  const onInterim = useCallback((text: string) => {
-    if (!whisper.isListening) setLiveTranscript(text);
-  }, [whisper.isListening]);
+  const onInterim = useCallback(
+    (text: string) => {
+      if (!whisper.isListening) setLiveTranscript(text);
+    },
+    [whisper.isListening],
+  );
 
   const speech = useContinuousSpeech(onFinal, onInterim);
 
@@ -540,11 +866,15 @@ function ActiveInterview({ company, difficulty, onComplete }: {
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true })
+    navigator.mediaDevices
+      .getUserMedia({ video: { width: 1280, height: 720 }, audio: true })
       .then((stream) => {
         if (!mounted) return;
         streamRef.current = stream;
-        if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.muted = true; }
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.muted = true;
+        }
         const ac = new AudioContext();
         audioContextRef.current = ac;
         const analyser = ac.createAnalyser();
@@ -556,7 +886,9 @@ function ActiveInterview({ company, difficulty, onComplete }: {
       .catch((err: Error) => {
         if (!mounted) return;
         if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
-          setCamError("Camera/mic permission denied. Click the camera icon in your browser's address bar and allow access, then refresh.");
+          setCamError(
+            "Camera/mic permission denied. Click the camera icon in your browser's address bar and allow access, then refresh.",
+          );
         } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
           setCamError("No camera or microphone found. Plug one in and refresh.");
         } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
@@ -573,292 +905,269 @@ function ActiveInterview({ company, difficulty, onComplete }: {
     };
   }, []);
 
-// ── Interview flow ────────────────────────────────────────────────────────────
+  // ── Interview flow ────────────────────────────────────────────────────────────
 
-const beginListening = useCallback(async () => {
-  try {
-    console.log("[Interview] Starting recording...");
+  const beginListening = useCallback(async () => {
+    try {
+      console.log("[Interview] Starting recording...");
 
+      setCurrentAnswer("");
+      setLiveTranscript("");
+      answerTimerRef.current = seconds;
+
+      await whisper.startRecording();
+
+      console.log("[Interview] Recording started");
+
+      setPhase("listening");
+    } catch (err) {
+      console.error("[Interview] Failed to start recording:", err);
+      setPhase("idle");
+    }
+  }, [seconds, whisper]);
+
+  const startInterview = useCallback(() => {
+    setIsRecording(true);
+    setPhase("thinking");
+    setMessages([]);
     setCurrentAnswer("");
-    setLiveTranscript("");
-    answerTimerRef.current = seconds;
+    setFullTranscript("");
+    setAllMetrics([]);
+    allMetricsRef.current = [];
+    setLiveMetrics({
+      fillerCount: 0,
+      fillerWords: [],
+      pauseCount: 0,
+      wpm: 0,
+      clarityScore: 85,
+      confidenceScore: 80,
+      pacingScore: 78,
+      technicalScore: 75,
+    });
 
-    await whisper.startRecording();
+    whisper.resetResult();
 
-    console.log("[Interview] Recording started");
-
-    setPhase("listening");
-  } catch (err) {
-    console.error("[Interview] Failed to start recording:", err);
-    setPhase("idle");
-  }
-}, [seconds, whisper]);
-
-const startInterview = useCallback(() => {
-  setIsRecording(true);
-  setPhase("thinking");
-  setMessages([]);
-  setCurrentAnswer("");
-  setFullTranscript("");
-  setAllMetrics([]);
-  allMetricsRef.current = [];
-  setLiveMetrics({
-    fillerCount: 0,
-    fillerWords: [],
-    pauseCount: 0,
-    wpm: 0,
-    clarityScore: 85,
-    confidenceScore: 80,
-    pacingScore: 78,
-    technicalScore: 75,
-  });
-
-  whisper.resetResult();
-
-  setTimeout(async () => {
-    setMessages([
-      {
-        from: "ai",
-        text: formatOpeningQuestion(
-          company as InterviewerCompany,
-          questionBank[0].question,
-        ),
-        timestamp: Date.now(),
-      },
-    ]);
-
-    await beginListening();
-  }, getAIThinkingDelay());
-}, [company, questionBank, whisper, beginListening]);
-
-const submitAnswer = useCallback(async () => {
-  if (phase !== "listening") return;
-
-  setPhase("thinking");
-
-  const elapsed = Math.max(seconds - answerTimerRef.current, 5);
-  answerTimerRef.current = seconds;
-
-  console.log("[Interview] Stopping recording...");
-
-  const transcription = await whisper.stopRecording();
-  const rawAnswer = transcription?.transcript?.trim() ?? "";
-  const evaluation = transcription?.evaluation ?? null;
-
-  let answer = rawAnswer.trim();
-
-  if (!answer) {
-    speech.stop();
-    answer = (currentAnswerRef.current + " " + liveTranscript).trim();
-  }
-
-  setCurrentAnswer("");
-  setLiveTranscript("");
-
-  if (!answer) {
-    console.warn("[Interview] No transcript captured");
-    setPhase("idle");
-    return;
-  }
-
-  const metrics = evaluation
-    ? metricsFromEvaluation(answer, elapsed, evaluation)
-    : analyzeSpeech(answer, elapsed);
-
-  setLiveMetrics(metrics);
-  setAllMetrics((prev) => {
-    const next = [...prev, metrics];
-    allMetricsRef.current = next;
-    return next;
-  });
-
-  setQuestionCount((c) => c + 1);
-
-  setMessages((prev) => [
-    ...prev,
-    {
-      from: "user",
-      text: answer,
-      timestamp: Date.now(),
-    },
-  ]);
-
-  const newFull = (fullTranscript + " " + answer).trim();
-
-  setFullTranscript(newFull);
-
-  const currentCount = questionCount;
-
-  setTimeout(async () => {
-    if (currentCount >= 3) {
-      setMessages((prev) => [
-        ...prev,
+    setTimeout(async () => {
+      setMessages([
         {
           from: "ai",
-          text: formatSessionClosing(company as InterviewerCompany),
+          text: formatOpeningQuestion(company as InterviewerCompany, questionBank[0].question),
           timestamp: Date.now(),
         },
       ]);
 
+      await beginListening();
+    }, getAIThinkingDelay());
+  }, [company, questionBank, whisper, beginListening]);
+
+  const submitAnswer = useCallback(async () => {
+    if (phase !== "listening") return;
+
+    setPhase("thinking");
+
+    const elapsed = Math.max(seconds - answerTimerRef.current, 5);
+    answerTimerRef.current = seconds;
+
+    console.log("[Interview] Stopping recording...");
+
+    const transcription = await whisper.stopRecording();
+    const rawAnswer = transcription?.transcript?.trim() ?? "";
+    const evaluation = transcription?.evaluation ?? null;
+
+    let answer = rawAnswer.trim();
+
+    if (!answer) {
+      speech.stop();
+      answer = (currentAnswerRef.current + " " + liveTranscript).trim();
+    }
+
+    setCurrentAnswer("");
+    setLiveTranscript("");
+
+    if (!answer) {
+      console.warn("[Interview] No transcript captured");
       setPhase("idle");
-
-      setTimeout(() => {
-        onComplete(
-          generateFeedbackReport(
-            newFull,
-            allMetricsRef.current,
-            seconds,
-            currentCount + 1,
-          ),
-          seconds,
-        );
-      }, 2000);
-
       return;
     }
 
-    const useFollowUp =
-      followUpIndex < currentQ.followUps.length && currentCount % 2 === 0;
+    const metrics = evaluation
+      ? metricsFromEvaluation(answer, elapsed, evaluation)
+      : analyzeSpeech(answer, elapsed);
 
-    let nextMsg: string;
+    setLiveMetrics(metrics);
+    setAllMetrics((prev) => {
+      const next = [...prev, metrics];
+      allMetricsRef.current = next;
+      return next;
+    });
 
-    if (useFollowUp) {
-      nextMsg = buildInterviewerReply({
-        company: company as InterviewerCompany,
-        answer,
-        followUps: currentQ.followUps,
-        followUpIndex,
-        mode: "follow_up",
-        scores: evaluation
-          ? {
-              correctness: evaluation.correctnessScore,
-              communication: evaluation.communicationScore,
-            }
-          : undefined,
-      });
-      setFollowUpIndex((i) => i + 1);
-    } else {
-      const nextQ =
-        questionBank[(questionIndex + 1) % questionBank.length];
-
-      nextMsg = buildInterviewerReply({
-        company: company as InterviewerCompany,
-        answer,
-        followUps: currentQ.followUps,
-        followUpIndex,
-        mode: "new_question",
-        nextQuestionText: nextQ.question,
-        scores: evaluation
-          ? {
-              correctness: evaluation.correctnessScore,
-              communication: evaluation.communicationScore,
-            }
-          : undefined,
-      });
-
-      setQuestionIndex((i) => i + 1);
-      setFollowUpIndex(0);
-    }
+    setQuestionCount((c) => c + 1);
 
     setMessages((prev) => [
       ...prev,
       {
-        from: "ai",
-        text: nextMsg,
+        from: "user",
+        text: answer,
         timestamp: Date.now(),
       },
     ]);
 
-    await beginListening();
-  }, getAIThinkingDelay());
-}, [
-  phase,
-  whisper,
-  speech,
-  liveTranscript,
-  seconds,
-  fullTranscript,
- questionCount,
-  followUpIndex,
-  currentQ,
-  questionBank,
-  questionIndex,
-  company,
-  onComplete,
-  beginListening,
-]);
+    const newFull = (fullTranscript + " " + answer).trim();
 
-const endInterview = useCallback(async () => {
-  setPhase("thinking");
+    setFullTranscript(newFull);
 
-  let extra = "";
-  let finalAnswerMetrics: SpeechMetrics | null = null;
+    const currentCount = questionCount;
 
-  if (whisper.isListening) {
-    const transcription = await whisper.stopRecording();
-    extra = transcription?.transcript?.trim() ?? "";
-    const evaluation = transcription?.evaluation ?? null;
-    const elapsed = Math.max(seconds - answerTimerRef.current, 5);
+    setTimeout(async () => {
+      if (currentCount >= 3) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            from: "ai",
+            text: formatSessionClosing(company as InterviewerCompany),
+            timestamp: Date.now(),
+          },
+        ]);
 
-    if (extra) {
-      finalAnswerMetrics = evaluation
-        ? metricsFromEvaluation(extra, elapsed, evaluation)
-        : analyzeSpeech(extra, elapsed);
-    }
-  } else {
-    speech.stop();
-    extra = currentAnswerRef.current.trim();
-    if (extra) {
-      finalAnswerMetrics = analyzeSpeech(
-        extra,
-        Math.max(seconds - answerTimerRef.current, 5),
-      );
-    }
-  }
+        setPhase("idle");
 
-  const transcript =
-    ((fullTranscript + " " + extra).trim()) ||
-    "No transcript recorded.";
+        setTimeout(() => {
+          onComplete(
+            generateFeedbackReport(newFull, allMetricsRef.current, seconds, currentCount + 1),
+            seconds,
+          );
+        }, 2000);
 
-  let metricsForReport = allMetricsRef.current;
-  if (finalAnswerMetrics) {
-    metricsForReport = [...metricsForReport, finalAnswerMetrics];
-    setLiveMetrics(finalAnswerMetrics);
-    setAllMetrics(metricsForReport);
-    allMetricsRef.current = metricsForReport;
-  }
+        return;
+      }
 
-  if (metricsForReport.length === 0) {
-    metricsForReport = [
-      analyzeSpeech(transcript, Math.max(seconds, 10)),
-    ];
-  }
+      const useFollowUp = followUpIndex < currentQ.followUps.length && currentCount % 2 === 0;
 
-  onComplete(
-    generateFeedbackReport(
-      transcript,
-      metricsForReport,
-      seconds,
-      questionCount,
-    ),
+      let nextMsg: string;
+
+      if (useFollowUp) {
+        nextMsg = buildInterviewerReply({
+          company: company as InterviewerCompany,
+          answer,
+          followUps: currentQ.followUps,
+          followUpIndex,
+          mode: "follow_up",
+          scores: evaluation
+            ? {
+                correctness: evaluation.correctnessScore,
+                communication: evaluation.communicationScore,
+              }
+            : undefined,
+        });
+        setFollowUpIndex((i) => i + 1);
+      } else {
+        const nextQ = questionBank[(questionIndex + 1) % questionBank.length];
+
+        nextMsg = buildInterviewerReply({
+          company: company as InterviewerCompany,
+          answer,
+          followUps: currentQ.followUps,
+          followUpIndex,
+          mode: "new_question",
+          nextQuestionText: nextQ.question,
+          scores: evaluation
+            ? {
+                correctness: evaluation.correctnessScore,
+                communication: evaluation.communicationScore,
+              }
+            : undefined,
+        });
+
+        setQuestionIndex((i) => i + 1);
+        setFollowUpIndex(0);
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "ai",
+          text: nextMsg,
+          timestamp: Date.now(),
+        },
+      ]);
+
+      await beginListening();
+    }, getAIThinkingDelay());
+  }, [
+    phase,
+    whisper,
+    speech,
+    liveTranscript,
     seconds,
-  );
-}, [
-  whisper,
-  speech,
-  fullTranscript,
-  seconds,
-  questionCount,
-  onComplete,
-]);
+    fullTranscript,
+    questionCount,
+    followUpIndex,
+    currentQ,
+    questionBank,
+    questionIndex,
+    company,
+    onComplete,
+    beginListening,
+  ]);
 
-const toggleMic = () => {
+  const endInterview = useCallback(async () => {
+    setPhase("thinking");
+
+    let extra = "";
+    let finalAnswerMetrics: SpeechMetrics | null = null;
+
+    if (whisper.isListening) {
+      const transcription = await whisper.stopRecording();
+      extra = transcription?.transcript?.trim() ?? "";
+      const evaluation = transcription?.evaluation ?? null;
+      const elapsed = Math.max(seconds - answerTimerRef.current, 5);
+
+      if (extra) {
+        finalAnswerMetrics = evaluation
+          ? metricsFromEvaluation(extra, elapsed, evaluation)
+          : analyzeSpeech(extra, elapsed);
+      }
+    } else {
+      speech.stop();
+      extra = currentAnswerRef.current.trim();
+      if (extra) {
+        finalAnswerMetrics = analyzeSpeech(extra, Math.max(seconds - answerTimerRef.current, 5));
+      }
+    }
+
+    const transcript = (fullTranscript + " " + extra).trim() || "No transcript recorded.";
+
+    let metricsForReport = allMetricsRef.current;
+    if (finalAnswerMetrics) {
+      metricsForReport = [...metricsForReport, finalAnswerMetrics];
+      setLiveMetrics(finalAnswerMetrics);
+      setAllMetrics(metricsForReport);
+      allMetricsRef.current = metricsForReport;
+    }
+
+    if (metricsForReport.length === 0) {
+      metricsForReport = [analyzeSpeech(transcript, Math.max(seconds, 10))];
+    }
+
+    onComplete(
+      generateFeedbackReport(transcript, metricsForReport, seconds, questionCount),
+      seconds,
+    );
+  }, [whisper, speech, fullTranscript, seconds, questionCount, onComplete]);
+
+  const toggleMic = () => {
     const track = streamRef.current?.getAudioTracks()[0];
-    if (track) { track.enabled = !track.enabled; setMicMuted(!micMuted); }
+    if (track) {
+      track.enabled = !track.enabled;
+      setMicMuted(!micMuted);
+    }
   };
   const toggleCam = () => {
     const track = streamRef.current?.getVideoTracks()[0];
-    if (track) { track.enabled = !track.enabled; setCamOff(!camOff); }
+    if (track) {
+      track.enabled = !track.enabled;
+      setCamOff(!camOff);
+    }
   };
 
   // ── Error screen ──────────────────────────────────────────────────────────────
@@ -867,7 +1176,9 @@ const toggleMic = () => {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-[oklch(0.66_0.21_25/0.3)] bg-[oklch(0.66_0.21_25/0.06)] p-12 text-center">
         <AlertCircle className="h-10 w-10 text-[oklch(0.74_0.20_25)]" />
-        <div className="font-display text-[22px]">{isHttps ? "HTTPS Required" : "Camera Access Required"}</div>
+        <div className="font-display text-[22px]">
+          {isHttps ? "HTTPS Required" : "Camera Access Required"}
+        </div>
         <p className="max-w-sm text-[13px] text-muted-foreground">{camError}</p>
         {isHttps ? (
           <p className="max-w-sm rounded-lg border border-border bg-surface-2/60 px-4 py-3 font-mono text-[12px] text-foreground/70">
@@ -901,8 +1212,12 @@ const toggleMic = () => {
           {/* Camera Feed */}
           <Card className="relative overflow-hidden p-0">
             <div className="relative aspect-video w-full bg-[oklch(0.10_0.01_270)] rounded-xl overflow-hidden">
-              <video ref={videoRef} autoPlay playsInline
-                className={`h-full w-full object-cover transition-opacity duration-300 ${camOff ? "opacity-0" : "opacity-100"}`} />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className={`h-full w-full object-cover transition-opacity duration-300 ${camOff ? "opacity-0" : "opacity-100"}`}
+              />
 
               {camOff && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
@@ -914,7 +1229,9 @@ const toggleMic = () => {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="flex flex-col items-center gap-3">
                     <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    <span className="text-[12px] text-muted-foreground">Requesting camera access…</span>
+                    <span className="text-[12px] text-muted-foreground">
+                      Requesting camera access…
+                    </span>
                   </div>
                 </div>
               )}
@@ -922,13 +1239,17 @@ const toggleMic = () => {
               {isRecording && (
                 <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-[oklch(0.66_0.21_25/0.4)] bg-background/80 px-3 py-1.5 backdrop-blur-sm">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[oklch(0.66_0.21_25)]" />
-                  <span className="text-[11px] font-medium text-[oklch(0.74_0.20_25)]">REC {timerFormatted}</span>
+                  <span className="text-[11px] font-medium text-[oklch(0.74_0.20_25)]">
+                    REC {timerFormatted}
+                  </span>
                 </div>
               )}
 
               <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1.5 backdrop-blur-sm">
                 <Building2 className="h-3 w-3 text-primary" />
-                <span className="text-[11px] font-medium text-foreground">{company} · {difficulty}</span>
+                <span className="text-[11px] font-medium text-foreground">
+                  {company} · {difficulty}
+                </span>
               </div>
 
               {phase === "listening" && (
@@ -954,8 +1275,11 @@ const toggleMic = () => {
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full border border-border bg-background/85 px-4 py-2 backdrop-blur-sm">
                   <span className="text-[11.5px] text-muted-foreground">Alex is thinking</span>
                   {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-1.5 w-1.5 rounded-full bg-muted-foreground"
-                      style={{ animation: `inUp 0.9s ${i * 0.15}s infinite alternate` }} />
+                    <span
+                      key={i}
+                      className="h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                      style={{ animation: `inUp 0.9s ${i * 0.15}s infinite alternate` }}
+                    />
                   ))}
                 </div>
               )}
@@ -964,14 +1288,18 @@ const toggleMic = () => {
             {/* Controls */}
             <div className="flex items-center justify-between border-t border-border px-4 py-3">
               <div className="flex gap-2">
-                <button onClick={toggleMic}
+                <button
+                  onClick={toggleMic}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${micMuted ? "border-[oklch(0.66_0.21_25/0.4)] bg-[oklch(0.66_0.21_25/0.1)] text-[oklch(0.74_0.20_25)]" : "border-border text-muted-foreground hover:text-foreground"}`}
-                  title={micMuted ? "Unmute" : "Mute"}>
+                  title={micMuted ? "Unmute" : "Mute"}
+                >
                   {micMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                 </button>
-                <button onClick={toggleCam}
+                <button
+                  onClick={toggleCam}
                   className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${camOff ? "border-[oklch(0.66_0.21_25/0.4)] bg-[oklch(0.66_0.21_25/0.1)] text-[oklch(0.74_0.20_25)]" : "border-border text-muted-foreground hover:text-foreground"}`}
-                  title={camOff ? "Turn on camera" : "Turn off camera"}>
+                  title={camOff ? "Turn on camera" : "Turn off camera"}
+                >
                   {camOff ? <VideoOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
                 </button>
               </div>
@@ -1007,12 +1335,25 @@ const toggleMic = () => {
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Volume2 className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Audio · Live Transcript</span>
+                <span className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  Audio · Live Transcript
+                </span>
               </div>
-              {phase === "listening" && <Badge tone="success"><Activity className="h-3 w-3" /> Live</Badge>}
+              {phase === "listening" && (
+                <Badge tone="success">
+                  <Activity className="h-3 w-3" /> Live
+                </Badge>
+              )}
               {whisper.isListening && <Badge tone="info">Recording</Badge>}
-              {whisper.isProcessing && <Badge tone="primary"><Loader2 className="h-3 w-3 animate-spin" /> Transcribing</Badge>}
-              {!whisper.isListening && !whisper.isProcessing && speech.isSupported && phase === "listening" && <Badge tone="warning">Browser</Badge>}
+              {whisper.isProcessing && (
+                <Badge tone="primary">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Transcribing
+                </Badge>
+              )}
+              {!whisper.isListening &&
+                !whisper.isProcessing &&
+                speech.isSupported &&
+                phase === "listening" && <Badge tone="warning">Browser</Badge>}
             </div>
             <WaveformVisualizer active={phase === "listening"} analyserRef={analyserRef} />
             <div className="mt-3 min-h-[60px] rounded-lg border border-border bg-surface-2/40 p-3 text-[13px] leading-relaxed">
@@ -1051,22 +1392,39 @@ const toggleMic = () => {
               </div>
               <div className="leading-tight">
                 <div className="text-[13.5px] font-semibold">Alex</div>
-                <div className="text-[11.5px] text-muted-foreground">AI Interviewer · {company} track</div>
+                <div className="text-[11.5px] text-muted-foreground">
+                  AI Interviewer · {company} track
+                </div>
               </div>
-              {phase === "thinking" && <Badge tone="primary" className="ml-auto">Thinking…</Badge>}
-              {phase === "listening" && <Badge tone="success" className="ml-auto">● {whisper.isListening ? "Recording" : "Listening"}</Badge>}
+              {phase === "thinking" && (
+                <Badge tone="primary" className="ml-auto">
+                  Thinking…
+                </Badge>
+              )}
+              {phase === "listening" && (
+                <Badge tone="success" className="ml-auto">
+                  ● {whisper.isListening ? "Recording" : "Listening"}
+                </Badge>
+              )}
             </div>
 
             <div className="flex-1 space-y-3 overflow-y-auto p-4" style={{ maxHeight: "300px" }}>
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
                   <Brain className="h-8 w-8 text-muted-foreground/40" />
-                  <p className="text-[12px] text-muted-foreground">Alex is ready. Start the interview to begin.</p>
+                  <p className="text-[12px] text-muted-foreground">
+                    Alex is ready. Start the interview to begin.
+                  </p>
                 </div>
               )}
               {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[12.5px] leading-relaxed ${m.from === "user" ? "rounded-br-md bg-foreground text-background" : "rounded-bl-md border border-border bg-surface-2/60 text-foreground/90"}`}>
+                <div
+                  key={i}
+                  className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[12.5px] leading-relaxed ${m.from === "user" ? "rounded-br-md bg-foreground text-background" : "rounded-bl-md border border-border bg-surface-2/60 text-foreground/90"}`}
+                  >
                     {m.text}
                   </div>
                 </div>
@@ -1074,8 +1432,11 @@ const toggleMic = () => {
               {phase === "thinking" && (
                 <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-border bg-surface-2/60 px-3.5 py-2.5 w-fit">
                   {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-1.5 w-1.5 rounded-full bg-muted-foreground"
-                      style={{ animation: `inUp 0.9s ${i * 0.15}s infinite alternate` }} />
+                    <span
+                      key={i}
+                      className="h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                      style={{ animation: `inUp 0.9s ${i * 0.15}s infinite alternate` }}
+                    />
                   ))}
                 </div>
               )}
@@ -1087,10 +1448,16 @@ const toggleMic = () => {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <CardHeader title="Session" action={<Clock className="h-3.5 w-3.5 text-muted-foreground" />} />
-                <div className="font-display text-[40px] leading-none text-foreground">{timerFormatted}</div>
+                <CardHeader
+                  title="Session"
+                  action={<Clock className="h-3.5 w-3.5 text-muted-foreground" />}
+                />
+                <div className="font-display text-[40px] leading-none text-foreground">
+                  {timerFormatted}
+                </div>
                 <div className="mt-1 text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
-                  {questionCount} answer{questionCount !== 1 ? "s" : ""} · {isRecording ? "In progress" : "Not started"}
+                  {questionCount} answer{questionCount !== 1 ? "s" : ""} ·{" "}
+                  {isRecording ? "In progress" : "Not started"}
                 </div>
                 {isRecording && (
                   <div className="mt-3 flex items-center gap-2">
@@ -1105,15 +1472,38 @@ const toggleMic = () => {
 
           {/* Live Speech Analytics */}
           <Card>
-            <CardHeader title="Live Speech Analytics" action={<BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />} />
+            <CardHeader
+              title="Live Speech Analytics"
+              action={<BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />}
+            />
             <div className="space-y-3">
               {[
                 { label: "Clarity", value: liveMetrics.clarityScore, tone: "success" as const },
-                { label: "Confidence", value: liveMetrics.confidenceScore, tone: "primary" as const },
-                { label: `Pace (${liveMetrics.wpm || "—"} wpm)`, value: liveMetrics.pacingScore, tone: "info" as const },
-                { label: `Pauses (~${liveMetrics.pauseCount})`, value: Math.max(0, 100 - liveMetrics.pauseCount * 8), tone: "warning" as const },
-                { label: `Fillers (${liveMetrics.fillerCount})`, value: Math.max(0, 100 - liveMetrics.fillerCount * 10), tone: "warning" as const },
-                { label: "Technical depth", value: liveMetrics.technicalScore, tone: "primary" as const },
+                {
+                  label: "Confidence",
+                  value: liveMetrics.confidenceScore,
+                  tone: "primary" as const,
+                },
+                {
+                  label: `Pace (${liveMetrics.wpm || "—"} wpm)`,
+                  value: liveMetrics.pacingScore,
+                  tone: "info" as const,
+                },
+                {
+                  label: `Pauses (~${liveMetrics.pauseCount})`,
+                  value: Math.max(0, 100 - liveMetrics.pauseCount * 8),
+                  tone: "warning" as const,
+                },
+                {
+                  label: `Fillers (${liveMetrics.fillerCount})`,
+                  value: Math.max(0, 100 - liveMetrics.fillerCount * 10),
+                  tone: "warning" as const,
+                },
+                {
+                  label: "Technical depth",
+                  value: liveMetrics.technicalScore,
+                  tone: "primary" as const,
+                },
               ].map((m) => (
                 <div key={m.label}>
                   <div className="mb-1.5 flex justify-between text-[12px]">
@@ -1126,10 +1516,17 @@ const toggleMic = () => {
             </div>
             {liveMetrics.fillerWords.length > 0 && (
               <div className="mt-3 rounded-lg border border-[oklch(0.80_0.14_80/0.2)] bg-[oklch(0.80_0.14_80/0.05)] p-3">
-                <div className="text-[10.5px] font-medium uppercase tracking-[0.12em] text-[oklch(0.82_0.14_80)]">Detected fillers</div>
+                <div className="text-[10.5px] font-medium uppercase tracking-[0.12em] text-[oklch(0.82_0.14_80)]">
+                  Detected fillers
+                </div>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {liveMetrics.fillerWords.map((f, i) => (
-                    <span key={i} className="rounded-full border border-[oklch(0.80_0.14_80/0.3)] bg-[oklch(0.80_0.14_80/0.08)] px-2 py-0.5 text-[11px] text-[oklch(0.82_0.14_80)]">{f}</span>
+                    <span
+                      key={i}
+                      className="rounded-full border border-[oklch(0.80_0.14_80/0.3)] bg-[oklch(0.80_0.14_80/0.08)] px-2 py-0.5 text-[11px] text-[oklch(0.82_0.14_80)]"
+                    >
+                      {f}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -1158,30 +1555,54 @@ function FeedbackScreen({
   onRestart: () => void;
   onSaved?: () => void;
 }) {
-  const scoreColor = (s: number) => s >= 80 ? "text-[oklch(0.78_0.16_160)]" : s >= 60 ? "text-[oklch(0.82_0.14_80)]" : "text-[oklch(0.74_0.20_25)]";
-  const scoreTone = (s: number): "success" | "warning" | "danger" => s >= 80 ? "success" : s >= 60 ? "warning" : "danger";
+  const scoreColor = (s: number) =>
+    s >= 80
+      ? "text-[oklch(0.78_0.16_160)]"
+      : s >= 60
+        ? "text-[oklch(0.82_0.14_80)]"
+        : "text-[oklch(0.74_0.20_25)]";
+  const scoreTone = (s: number): "success" | "warning" | "danger" =>
+    s >= 80 ? "success" : s >= 60 ? "warning" : "danger";
 
   return (
     <div className="animate-in-up space-y-4">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-[var(--gradient-surface)] p-8">
         <div aria-hidden className="absolute inset-0 [background:var(--gradient-glow)]" />
-        <div aria-hidden className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+        <div
+          aria-hidden
+          className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl"
+        />
         <div className="relative flex flex-col items-center gap-2 text-center md:flex-row md:text-left md:gap-8">
           <div className="flex flex-col items-center">
-            <div className={`font-display text-[72px] leading-none ${scoreColor(report.overallScore)}`}>{report.overallScore}</div>
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Overall Score</div>
+            <div
+              className={`font-display text-[72px] leading-none ${scoreColor(report.overallScore)}`}
+            >
+              {report.overallScore}
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              Overall Score
+            </div>
           </div>
           <div className="flex-1">
             <h2 className="font-display text-[28px] text-foreground">Interview Complete</h2>
             <p className="mt-1 text-[13px] text-muted-foreground">
-              {report.overallScore >= 80 ? "Excellent performance. Strong communication and technical depth."
-                : report.overallScore >= 60 ? "Good effort. A few areas to polish before your real interview."
-                : "Keep practicing. Focus on the recommendations below to improve quickly."}
+              {report.overallScore >= 80
+                ? "Excellent performance. Strong communication and technical depth."
+                : report.overallScore >= 60
+                  ? "Good effort. A few areas to polish before your real interview."
+                  : "Keep practicing. Focus on the recommendations below to improve quickly."}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Badge tone="primary"><Clock className="h-3 w-3" /> {report.fillerWordCount} filler words</Badge>
-              <Badge tone={report.pauseCount > 3 ? "warning" : "success"}><Zap className="h-3 w-3" /> {report.pauseCount} pauses</Badge>
-              <Badge tone="info"><MessageSquare className="h-3 w-3" /> {report.transcript.split(/\s+/).filter(Boolean).length} words spoken</Badge>
+              <Badge tone="primary">
+                <Clock className="h-3 w-3" /> {report.fillerWordCount} filler words
+              </Badge>
+              <Badge tone={report.pauseCount > 3 ? "warning" : "success"}>
+                <Zap className="h-3 w-3" /> {report.pauseCount} pauses
+              </Badge>
+              <Badge tone="info">
+                <MessageSquare className="h-3 w-3" />{" "}
+                {report.transcript.split(/\s+/).filter(Boolean).length} words spoken
+              </Badge>
             </div>
           </div>
         </div>
@@ -1198,18 +1619,28 @@ function FeedbackScreen({
             <div className="flex items-center gap-2 text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
               <s.icon className="h-3.5 w-3.5" /> {s.label}
             </div>
-            <div className={`mt-2 font-display text-[36px] leading-none ${scoreColor(s.value)}`}>{s.value}</div>
-            <div className="mt-2"><ProgressBar value={s.value} tone={scoreTone(s.value)} /></div>
+            <div className={`mt-2 font-display text-[36px] leading-none ${scoreColor(s.value)}`}>
+              {s.value}
+            </div>
+            <div className="mt-2">
+              <ProgressBar value={s.value} tone={scoreTone(s.value)} />
+            </div>
           </Card>
         ))}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <CardHeader title="Strengths" action={<CheckCircle2 className="h-4 w-4 text-[oklch(0.74_0.16_160)]" />} />
+          <CardHeader
+            title="Strengths"
+            action={<CheckCircle2 className="h-4 w-4 text-[oklch(0.74_0.16_160)]" />}
+          />
           <ul className="space-y-2">
             {report.strengths.map((s, i) => (
-              <li key={i} className="flex items-start gap-2.5 rounded-lg border border-[oklch(0.74_0.16_160/0.15)] bg-[oklch(0.74_0.16_160/0.06)] p-3 text-[12.5px]">
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded-lg border border-[oklch(0.74_0.16_160/0.15)] bg-[oklch(0.74_0.16_160/0.06)] p-3 text-[12.5px]"
+              >
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[oklch(0.74_0.16_160)]" />
                 <span className="text-foreground/85">{s}</span>
               </li>
@@ -1217,10 +1648,16 @@ function FeedbackScreen({
           </ul>
         </Card>
         <Card>
-          <CardHeader title="Areas to Improve" action={<AlertCircle className="h-4 w-4 text-[oklch(0.80_0.14_80)]" />} />
+          <CardHeader
+            title="Areas to Improve"
+            action={<AlertCircle className="h-4 w-4 text-[oklch(0.80_0.14_80)]" />}
+          />
           <ul className="space-y-2">
             {report.weaknesses.map((w, i) => (
-              <li key={i} className="flex items-start gap-2.5 rounded-lg border border-[oklch(0.80_0.14_80/0.15)] bg-[oklch(0.80_0.14_80/0.06)] p-3 text-[12.5px]">
+              <li
+                key={i}
+                className="flex items-start gap-2.5 rounded-lg border border-[oklch(0.80_0.14_80/0.15)] bg-[oklch(0.80_0.14_80/0.06)] p-3 text-[12.5px]"
+              >
                 <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[oklch(0.80_0.14_80)]" />
                 <span className="text-foreground/85">{w}</span>
               </li>
@@ -1230,11 +1667,19 @@ function FeedbackScreen({
       </div>
 
       <Card>
-        <CardHeader title="Personalized Coaching Recommendations" action={<Award className="h-4 w-4 text-primary" />} />
+        <CardHeader
+          title="Personalized Coaching Recommendations"
+          action={<Award className="h-4 w-4 text-primary" />}
+        />
         <div className="grid gap-2 md:grid-cols-2">
           {report.recommendations.map((r, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-lg border border-border bg-surface-2/40 p-3.5">
-              <div className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">{i + 1}</div>
+            <div
+              key={i}
+              className="flex items-start gap-3 rounded-lg border border-border bg-surface-2/40 p-3.5"
+            >
+              <div className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">
+                {i + 1}
+              </div>
               <span className="text-[12.5px] text-foreground/85">{r}</span>
             </div>
           ))}
@@ -1251,7 +1696,9 @@ function FeedbackScreen({
       )}
 
       <div className="flex justify-center gap-3">
-        <Button variant="outline" size="md" onClick={onRestart}><RefreshCw className="h-4 w-4" /> New Interview</Button>
+        <Button variant="outline" size="md" onClick={onRestart}>
+          <RefreshCw className="h-4 w-4" /> New Interview
+        </Button>
         <Button
           size="md"
           onClick={() => {
@@ -1291,17 +1738,36 @@ function CameraInterviewPage() {
   };
 
   const badgeContent =
-    phase === "active" ? <Badge tone="success">● Live Session</Badge>
-    : phase === "feedback" ? <Badge tone="primary"><Award className="h-3 w-3" /> Report Ready</Badge>
-    : <Badge tone="info"><Camera className="h-3 w-3" /> Camera Mode</Badge>;
+    phase === "active" ? (
+      <Badge tone="success">● Live Session</Badge>
+    ) : phase === "feedback" ? (
+      <Badge tone="primary">
+        <Award className="h-3 w-3" /> Report Ready
+      </Badge>
+    ) : (
+      <Badge tone="info">
+        <Camera className="h-3 w-3" /> Camera Mode
+      </Badge>
+    );
 
   return (
     <AppShell eyebrow="Live Interview" title="Live AI Camera Interview" actions={badgeContent}>
       {phase === "setup" && (
-        <SetupScreen company={company} setCompany={setCompany} difficulty={difficulty} setDifficulty={setDifficulty} onStart={handleStart} />
+        <SetupScreen
+          company={company}
+          setCompany={setCompany}
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          onStart={handleStart}
+        />
       )}
       {phase === "active" && (
-        <ActiveInterview key={sessionKey} company={company} difficulty={difficulty} onComplete={handleComplete} />
+        <ActiveInterview
+          key={sessionKey}
+          company={company}
+          difficulty={difficulty}
+          onComplete={handleComplete}
+        />
       )}
       {phase === "feedback" && report && (
         <FeedbackScreen

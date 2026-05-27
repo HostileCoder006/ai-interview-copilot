@@ -54,7 +54,8 @@ export function analyzeSpeech(transcript: string, durationSeconds: number): Spee
   const ellipsisPauses = (transcript.match(/\.\.\.|…/g) || []).length;
   const sentenceBreaks = (transcript.match(/[.!?]\s+(?=[A-Z])/g) || []).length;
   const longHesitation = (transcript.match(/\b(uh|um|er)\b/gi) || []).length;
-  const pauseCount = ellipsisPauses + Math.max(0, sentenceBreaks - 2) + Math.floor(longHesitation / 2);
+  const pauseCount =
+    ellipsisPauses + Math.max(0, sentenceBreaks - 2) + Math.floor(longHesitation / 2);
 
   const fillerRatio = wordCount > 0 ? fillerCount / wordCount : 0;
   const clarityScore = Math.min(
@@ -71,10 +72,7 @@ export function analyzeSpeech(transcript: string, durationSeconds: number): Spee
 
   const confidenceScore = Math.min(
     100,
-    Math.max(
-      30,
-      Math.round(clarityScore * 0.55 + pacingScore * 0.35 - pauseCount * 2.5),
-    ),
+    Math.max(30, Math.round(clarityScore * 0.55 + pacingScore * 0.35 - pauseCount * 2.5)),
   );
 
   const technicalTerms = [
@@ -137,7 +135,9 @@ export function metricsFromEvaluation(
     confidenceScore: evaluation.confidenceScore,
     pacingScore: Math.round((pacingScore + Math.min(100, evaluation.communicationScore + 4)) / 2),
     technicalScore: Math.round(
-      (evaluation.correctnessScore + (evaluation.optimizationScore ?? evaluation.correctnessScore)) / 2,
+      (evaluation.correctnessScore +
+        (evaluation.optimizationScore ?? evaluation.correctnessScore)) /
+        2,
     ),
   };
 }

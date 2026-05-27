@@ -14,19 +14,14 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useInterviewSessions } from "@/hooks/useInterviewSessions";
-import {
-  computeInterviewStats,
-  formatRelativeSessionDate,
-} from "@/lib/interview-history-utils";
+import { computeInterviewStats, formatRelativeSessionDate } from "@/lib/interview-history-utils";
 
 export const Route = createFileRoute("/analytics")({ component: HistoryPage });
 
 function HistoryPage() {
   const sessions = useInterviewSessions();
   const stats = computeInterviewStats(sessions);
-  const sorted = [...sessions].sort(
-    (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0),
-  );
+  const sorted = [...sessions].sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
 
   return (
     <AppShell
@@ -80,8 +75,8 @@ function HistoryPage() {
       {sessions.length === 0 ? (
         <Card className="mt-4 p-12 text-center">
           <p className="text-[14px] text-muted-foreground">
-            No interview history yet. Complete a camera or text session to see scores,
-            trends, and coaching insights here.
+            No interview history yet. Complete a camera or text session to see scores, trends, and
+            coaching insights here.
           </p>
           <Link to="/voice" className="mt-4 inline-block">
             <Button size="md">
@@ -99,8 +94,7 @@ function HistoryPage() {
                   hint={`${stats.scoreTrend.length} sessions`}
                 />
                 {stats.scoreTrend.length >= 2 &&
-                  stats.scoreTrend[stats.scoreTrend.length - 1]! >=
-                    stats.scoreTrend[0]! && (
+                  stats.scoreTrend[stats.scoreTrend.length - 1]! >= stats.scoreTrend[0]! && (
                     <Badge tone="primary">
                       <TrendingUp className="h-3 w-3" /> Improving
                     </Badge>

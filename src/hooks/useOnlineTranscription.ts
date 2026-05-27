@@ -10,12 +10,7 @@ export interface TranscriptionResult {
   evaluation: EvaluationResult | null;
 }
 
-export type RecordingState =
-  | "idle"
-  | "requesting"
-  | "recording"
-  | "processing"
-  | "error";
+export type RecordingState = "idle" | "requesting" | "recording" | "processing" | "error";
 
 export interface UseOnlineTranscriptionOptions {
   question: InterviewQuestion;
@@ -64,8 +59,7 @@ export function useOnlineTranscription({
   question,
   durationSeconds = 5,
 }: UseOnlineTranscriptionOptions): UseOnlineTranscriptionReturn {
-  const [recordingState, setRecordingState] =
-    useState<RecordingState>("idle");
+  const [recordingState, setRecordingState] = useState<RecordingState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TranscriptionResult | null>(null);
 
@@ -73,9 +67,7 @@ export function useOnlineTranscription({
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const durationRef = useRef(durationSeconds);
-  const stopResolveRef = useRef<
-    ((value: TranscriptionResult | null) => void) | null
-  >(null);
+  const stopResolveRef = useRef<((value: TranscriptionResult | null) => void) | null>(null);
 
   durationRef.current = durationSeconds;
 
@@ -159,10 +151,7 @@ export function useOnlineTranscription({
           const ext = actualMimeType.includes("ogg") ? "ogg" : "webm";
           formData.append("audio", blob, `recording.${ext}`);
           formData.append("question", JSON.stringify(question));
-          formData.append(
-            "durationSeconds",
-            String(Math.max(durationRef.current, 5)),
-          );
+          formData.append("durationSeconds", String(Math.max(durationRef.current, 5)));
 
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 60_000);
@@ -177,9 +166,7 @@ export function useOnlineTranscription({
 
           if (!response.ok) {
             const text = await response.text();
-            throw new Error(
-              `Server error ${response.status}: ${text.slice(0, 200)}`,
-            );
+            throw new Error(`Server error ${response.status}: ${text.slice(0, 200)}`);
           }
 
           const data = (await response.json()) as TranscriptionResult;
@@ -188,8 +175,7 @@ export function useOnlineTranscription({
           stopResolveRef.current?.(data);
           stopResolveRef.current = null;
         } catch (err) {
-          const message =
-            err instanceof Error ? err.message : "Unknown error";
+          const message = err instanceof Error ? err.message : "Unknown error";
           setError(
             message === "The user aborted a request."
               ? "Transcription timed out. Try a shorter answer."
@@ -204,9 +190,7 @@ export function useOnlineTranscription({
       recorder.start(250);
       setRecordingState("recording");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Microphone error",
-      );
+      setError(err instanceof Error ? err.message : "Microphone error");
       setRecordingState("error");
     }
   }, [question]);

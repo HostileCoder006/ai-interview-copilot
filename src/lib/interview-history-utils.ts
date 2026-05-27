@@ -29,9 +29,7 @@ function uniqueTake(items: string[], limit: number) {
   return [...new Set(items.filter(Boolean))].slice(0, limit);
 }
 
-export function computeInterviewStats(
-  sessions: InterviewHistoryEntry[],
-): InterviewAggregateStats {
+export function computeInterviewStats(sessions: InterviewHistoryEntry[]): InterviewAggregateStats {
   if (sessions.length === 0) {
     return {
       sessionCount: 0,
@@ -54,9 +52,7 @@ export function computeInterviewStats(
     };
   }
 
-  const sorted = [...sessions].sort(
-    (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0),
-  );
+  const sorted = [...sessions].sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
 
   const scoreTrend = [...sorted]
     .reverse()
@@ -88,9 +84,7 @@ export function computeInterviewStats(
     avgClarity: avg(sessions.map((s) => s.clarityScore ?? s.communicationScore)),
     avgConfidence: avg(sessions.map((s) => s.confidenceScore)),
     avgPacing: avg(sessions.map((s) => s.pacingScore ?? s.communicationScore)),
-    avgTechnical: avg(
-      sessions.map((s) => s.technicalScore ?? s.correctnessScore),
-    ),
+    avgTechnical: avg(sessions.map((s) => s.technicalScore ?? s.correctnessScore)),
     avgCorrectness: avg(sessions.map((s) => s.correctnessScore)),
     avgFillers: avg(sessions.map((s) => s.fillerWords)),
     avgWpm: avg(sessions.map((s) => s.wpm ?? 0).filter((w) => w > 0)),

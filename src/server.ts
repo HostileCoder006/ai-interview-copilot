@@ -83,9 +83,7 @@ function parseInterviewQuestion(raw: FormDataEntryValue | null): InterviewQuesti
         followUps: Array.isArray(parsed.followUps)
           ? parsed.followUps.filter((t) => typeof t === "string")
           : [],
-        hints: Array.isArray(parsed.hints)
-          ? parsed.hints.filter((t) => typeof t === "string")
-          : [],
+        hints: Array.isArray(parsed.hints) ? parsed.hints.filter((t) => typeof t === "string") : [],
       };
     }
   } catch {
@@ -106,17 +104,16 @@ function parseInterviewQuestion(raw: FormDataEntryValue | null): InterviewQuesti
 function normalizeEvaluation(value: unknown, fallback: EvaluationResult): EvaluationResult {
   const data = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   return {
-    correctnessScore:   clampScore(data.correctnessScore,   fallback.correctnessScore),
+    correctnessScore: clampScore(data.correctnessScore, fallback.correctnessScore),
     communicationScore: clampScore(data.communicationScore, fallback.communicationScore),
-    confidenceScore:    clampScore(data.confidenceScore,    fallback.confidenceScore),
-    optimizationScore:  clampScore(data.optimizationScore,  fallback.optimizationScore),
-    overallScore:       clampScore(data.overallScore,       fallback.overallScore),
-    missingPoints:      asStringArray(data.missingPoints,      fallback.missingPoints),
-    incorrectStatements:asStringArray(data.incorrectStatements,fallback.incorrectStatements),
-    strengths:          asStringArray(data.strengths,          fallback.strengths),
-    weaknesses:         asStringArray(data.weaknesses,         fallback.weaknesses),
-    suggestion:
-      typeof data.suggestion === "string" ? data.suggestion : fallback.suggestion,
+    confidenceScore: clampScore(data.confidenceScore, fallback.confidenceScore),
+    optimizationScore: clampScore(data.optimizationScore, fallback.optimizationScore),
+    overallScore: clampScore(data.overallScore, fallback.overallScore),
+    missingPoints: asStringArray(data.missingPoints, fallback.missingPoints),
+    incorrectStatements: asStringArray(data.incorrectStatements, fallback.incorrectStatements),
+    strengths: asStringArray(data.strengths, fallback.strengths),
+    weaknesses: asStringArray(data.weaknesses, fallback.weaknesses),
+    suggestion: typeof data.suggestion === "string" ? data.suggestion : fallback.suggestion,
     improvedAnswer:
       typeof data.improvedAnswer === "string" ? data.improvedAnswer : fallback.improvedAnswer,
     followUp:
@@ -198,7 +195,10 @@ async function handleEvaluate(request: Request, env: unknown): Promise<Response>
   const model = getEnvValue(env, "OPENROUTER_EVALUATION_MODEL") ?? EVALUATION_MODEL;
 
   if (!apiKey) {
-    return jsonResponse({ error: "Missing OPENROUTER_EVALUATION_API_KEY or OPENROUTER_API_KEY in .env" }, { status: 500 });
+    return jsonResponse(
+      { error: "Missing OPENROUTER_EVALUATION_API_KEY or OPENROUTER_API_KEY in .env" },
+      { status: 500 },
+    );
   }
 
   try {
@@ -216,7 +216,8 @@ async function handleEvaluate(request: Request, env: unknown): Promise<Response>
         messages: [
           {
             role: "system",
-            content: "You evaluate technical interview answers and return strict JSON only. No markdown, no explanation.",
+            content:
+              "You evaluate technical interview answers and return strict JSON only. No markdown, no explanation.",
           },
           {
             role: "user",
@@ -254,8 +255,7 @@ async function handleTranscribeAndEvaluate(request: Request, env: unknown): Prom
   const evaluationKey = resolveApiKey(env, "evaluation");
   const transcriptionModel =
     getEnvValue(env, "OPENROUTER_TRANSCRIPTION_MODEL") ?? TRANSCRIPTION_MODEL;
-  const evaluationModel =
-    getEnvValue(env, "OPENROUTER_EVALUATION_MODEL") ?? EVALUATION_MODEL;
+  const evaluationModel = getEnvValue(env, "OPENROUTER_EVALUATION_MODEL") ?? EVALUATION_MODEL;
 
   if (!transcriptionKey) {
     return jsonResponse(
@@ -350,7 +350,8 @@ async function handleTranscribeAndEvaluate(request: Request, env: unknown): Prom
         messages: [
           {
             role: "system",
-            content: "You evaluate technical interview answers and return strict JSON only. No markdown, no explanation.",
+            content:
+              "You evaluate technical interview answers and return strict JSON only. No markdown, no explanation.",
           },
           {
             role: "user",
@@ -473,7 +474,11 @@ function brandedErrorResponse(): Response {
 
 function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boolean {
   let payload: unknown;
-  try { payload = JSON.parse(body); } catch { return false; }
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return false;
+  }
   if (!payload || Array.isArray(payload) || typeof payload !== "object") return false;
   const fields = payload as Record<string, unknown>;
   const expectedKeys = new Set(["message", "status", "unhandled"]);

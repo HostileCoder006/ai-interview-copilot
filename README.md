@@ -14,15 +14,15 @@ An AI interview practice app for technical interview preparation. Supports text 
 
 ## Tech Stack
 
-| Layer        | Technology                                      |
-| ------------ | ----------------------------------------------- |
-| Framework    | TanStack Start                                  |
-| UI           | React 19 + TypeScript                           |
-| Styling      | Tailwind CSS v4                                 |
-| Routing      | TanStack Router                                 |
-| Build        | Vite                                            |
-| Transcription| OpenRouter → `openai/whisper-large-v3` (JSON + base64 audio) |
-| Evaluation   | OpenRouter → `deepseek/deepseek-v4-flash`       |
+| Layer         | Technology                                                   |
+| ------------- | ------------------------------------------------------------ |
+| Framework     | TanStack Start                                               |
+| UI            | React 19 + TypeScript                                        |
+| Styling       | Tailwind CSS v4                                              |
+| Routing       | TanStack Router                                              |
+| Build         | Vite                                                         |
+| Transcription | OpenRouter → `openai/whisper-large-v3` (JSON + base64 audio) |
+| Evaluation    | OpenRouter → `deepseek/deepseek-v4-flash`                    |
 
 ## Quick Start
 
@@ -79,14 +79,14 @@ npm run build
 
 ## Important Files
 
-| File                                      | Purpose                                                    |
-| ----------------------------------------- | ---------------------------------------------------------- |
-| `src/routes/voice.tsx`                    | Camera interview UI                                        |
-| `src/hooks/useOnlineTranscription.ts`     | MediaRecorder → `/api/transcribe-and-evaluate` hook        |
-| `src/server.ts`                           | API endpoints (transcribe + evaluate in one request)       |
-| `src/lib/api-config.ts`                   | OpenRouter base URL, model names, fallback API key         |
-| `src/lib/mock-evaluator.ts`               | Local fallback evaluator (used if API call fails)          |
-| `src/lib/interview-storage.ts`            | Saves and loads local interview history                    |
+| File                                  | Purpose                                              |
+| ------------------------------------- | ---------------------------------------------------- |
+| `src/routes/voice.tsx`                | Camera interview UI                                  |
+| `src/hooks/useOnlineTranscription.ts` | MediaRecorder → `/api/transcribe-and-evaluate` hook  |
+| `src/server.ts`                       | API endpoints (transcribe + evaluate in one request) |
+| `src/lib/api-config.ts`               | OpenRouter base URL, model names, fallback API key   |
+| `src/lib/mock-evaluator.ts`           | Local fallback evaluator (used if API call fails)    |
+| `src/lib/interview-storage.ts`        | Saves and loads local interview history              |
 
 ## Notes
 

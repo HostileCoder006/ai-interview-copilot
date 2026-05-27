@@ -24,9 +24,7 @@ function ScorePill({ score }: { score: number }) {
 export function HistorySection() {
   const sessions = useInterviewSessions();
   const stats = computeInterviewStats(sessions);
-  const recent = [...sessions]
-    .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
-    .slice(0, 5);
+  const recent = [...sessions].sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0)).slice(0, 5);
 
   if (sessions.length === 0) {
     return (
@@ -48,9 +46,7 @@ export function HistorySection() {
             key={s.label}
             className="rounded-xl border border-border bg-surface-2/40 p-3 text-center"
           >
-            <div className="font-display text-[28px] leading-none text-foreground">
-              {s.value}
-            </div>
+            <div className="font-display text-[28px] leading-none text-foreground">{s.value}</div>
             <div className="mt-1 text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">
               {s.label}
             </div>
@@ -118,11 +114,7 @@ export function HistorySection() {
                   <ProgressBar
                     value={s.overallScore}
                     tone={
-                      s.overallScore >= 80
-                        ? "success"
-                        : s.overallScore >= 65
-                          ? "warning"
-                          : "danger"
+                      s.overallScore >= 80 ? "success" : s.overallScore >= 65 ? "warning" : "danger"
                     }
                   />
                 </div>

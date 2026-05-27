@@ -13,10 +13,7 @@ import {
   type InterviewerCompany,
 } from "@/lib/interviewer-dialogue";
 import { getRandomQuestion } from "@/lib/interview-questions";
-import {
-  buildHistoryFromEvaluations,
-  persistInterviewSession,
-} from "@/lib/session-persistence";
+import { buildHistoryFromEvaluations, persistInterviewSession } from "@/lib/session-persistence";
 import { metricsFromEvaluation, type SpeechMetrics } from "@/lib/speech-metrics";
 
 function newId() {
@@ -129,10 +126,7 @@ export function useInterview({
     setTimeout(() => {
       addMessage({
         role: "ai",
-        content: formatOpeningQuestion(
-          company as InterviewerCompany,
-          initialQuestion.text,
-        ),
+        content: formatOpeningQuestion(company as InterviewerCompany, initialQuestion.text),
         timestamp: Date.now(),
       });
       answerStartRef.current = 0;
@@ -169,7 +163,7 @@ export function useInterview({
       setStatus("complete");
       onComplete?.(finalMessages, lastEvaluation.overallScore);
     },
-    [company, initialQuestion, elapsedSeconds, addMessage, stopTimer, onComplete],
+    [company, initialQuestion, addMessage, stopTimer, onComplete],
   );
 
   const submitAnswer = useCallback(
@@ -278,8 +272,7 @@ export function useInterview({
       } catch {
         addMessage({
           role: "ai",
-          content:
-            "I lost you for a second — can you restate the core of your approach?",
+          content: "I lost you for a second — can you restate the core of your approach?",
           timestamp: Date.now(),
         });
         setStatus("active");

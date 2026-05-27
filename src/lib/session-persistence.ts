@@ -23,13 +23,9 @@ export function buildHistoryFromEvaluations(options: {
   const completedAt = Date.now();
   const evaluations = options.evaluations;
   const avg = (scores: number[]) =>
-    scores.length
-      ? Math.round(scores.reduce((t, s) => t + s, 0) / scores.length)
-      : 0;
+    scores.length ? Math.round(scores.reduce((t, s) => t + s, 0) / scores.length) : 0;
 
-  const speech = options.metricsSamples?.length
-    ? averageMetrics(options.metricsSamples)
-    : null;
+  const speech = options.metricsSamples?.length ? averageMetrics(options.metricsSamples) : null;
 
   return {
     id: `${options.mode}-${completedAt}`,
@@ -48,18 +44,15 @@ export function buildHistoryFromEvaluations(options: {
     fillerWords: speech?.fillerCount ?? 0,
     clarityScore: speech?.clarityScore ?? avg(evaluations.map((e) => e.communicationScore)),
     pacingScore: speech?.pacingScore ?? avg(evaluations.map((e) => e.communicationScore)),
-    technicalScore:
-      speech?.technicalScore ?? avg(evaluations.map((e) => e.correctnessScore)),
+    technicalScore: speech?.technicalScore ?? avg(evaluations.map((e) => e.correctnessScore)),
     wpm: speech?.wpm,
     pauseCount: speech?.pauseCount,
     topFillers: speech?.fillerWords,
     missingPoints: [...new Set(evaluations.flatMap((e) => e.missingPoints))],
     strengths:
-      options.strengths ??
-      [...new Set(evaluations.flatMap((e) => e.strengths))].slice(0, 6),
+      options.strengths ?? [...new Set(evaluations.flatMap((e) => e.strengths))].slice(0, 6),
     weaknesses:
-      options.weaknesses ??
-      [...new Set(evaluations.flatMap((e) => e.weaknesses))].slice(0, 6),
+      options.weaknesses ?? [...new Set(evaluations.flatMap((e) => e.weaknesses))].slice(0, 6),
     recommendations: options.recommendations,
     transcript: options.transcript,
   };

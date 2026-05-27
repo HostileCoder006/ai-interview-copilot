@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import type { InterviewHistoryEntry } from "@/lib/interview-types";
-import {
-  getStoredInterviewSessions,
-  subscribeToInterviewSessions,
-} from "@/lib/interview-storage";
+import { getStoredInterviewSessions, subscribeToInterviewSessions } from "@/lib/interview-storage";
 
 export function useInterviewSessions(): InterviewHistoryEntry[] {
   const [sessions, setSessions] = useState<InterviewHistoryEntry[]>(() =>
